@@ -7,7 +7,9 @@ class App extends Component {
 
   constructor(props){
     super(props);
-    this.state = {};
+    this.state = {
+      pokemon: []
+    };
 
     this.loadPokemon = this.loadPokemon.bind(this);
   }
@@ -18,6 +20,10 @@ class App extends Component {
       return response.json();
     }).then(json => {
       console.log(json);
+      this.setState({
+        pokemon: json.results
+      });
+      console.log(this.state);
     }).catch(err =>{
       console.log(err);
     });
