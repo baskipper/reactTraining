@@ -3,17 +3,22 @@ import logo from './logo.svg';
 import './App.css';
 import 'whatwg-fetch';
 import PokeList from './components/PokeList';
-import {Col} from 'react-bootstrap/lib/';
+import { Col, Pagination } from 'react-bootstrap/lib/';
 
 class App extends Component {
 
   constructor(props){
     super(props);
     this.state = {
-      pokemon: []
+      pokemon: [],
+      activePage: 0,
+      limit: 50,
+      offset: 0,
+      totalPages: 0
     };
 
     this.loadPokemon = this.loadPokemon.bind(this);
+    this.handlePaginationSelect = this.handlePaginationSelect.bind(this);
   }
 
   loadPokemon(url){
@@ -21,9 +26,11 @@ class App extends Component {
     .then(response => {
       return response.json();
     }).then(json => {
-      console.log(json);
+      let pages = Math.round(json.count / this.state.limit);
       this.setState({
-        pokemon: json.results
+        pokemon: json.results,
+        totalPages: pages,
+        count: json.count
       });
       console.log(this.state);
     }).catch(err =>{
@@ -33,8 +40,17 @@ class App extends Component {
 
 
   componentWillMount(){
-    this.loadPokemon(`${this.props.baseUrl}/pokemon/`)
+    this.loadPokemon(`${this.props.baseUrl}/pokemon/`);
   }
+
+  handlePaginationSelect(event){
+    console.log(event);
+    let offset = this.state.limit * event;
+    let test = `${this.props.baseUrl}/pokemon/?limit=${this.state.limit}&offset=${offset}`;
+    console.log(test);
+    this.loadPokemon(`${this.props.baseUrl}/pokemon/?limit=${this.state.limit}&offset=${offset}`);
+  }
+
   render() {
     return (
       <div className="App">
@@ -44,6 +60,9 @@ class App extends Component {
         </header>
         <Col sm={8} md={10} smOffset={2} mdOffset={1}>
           <PokeList listOfPokemon={this.state.pokemon} />
+        </Col>
+        <Col sm={12}>
+          <Pagination onSelect={this.handlePaginationSelect} items={this.state.totalPages} bsSize="small" activePage={this.state.activePage} />
         </Col>
       </div>
     );
