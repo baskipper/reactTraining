@@ -12,9 +12,11 @@ const PokeList = ({listOfPokemon}) => {
   });
 
   return(
+    <Col sm={8} md={10} smOffset={2} mdOffset={1} >
     <ListGroup>
     {pokemon}
     </ListGroup>
+    </Col>
   )
 }
 
